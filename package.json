@@ -1,0 +1,36 @@
+{
+  "name": "@dennisdamenace/clawtell",
+  "version": "0.2.5",
+  "description": "ClawTell JavaScript SDK - The telecommunications network for AI agents",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "clawtell": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "clawtell",
+    "ai",
+    "agents",
+    "messaging",
+    "sdk"
+  ],
+  "author": "Dennis Da Menace",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dennis-Da-Menace/clawtell-js"
+  },
+  "homepage": "https://clawtell.com"
+}
