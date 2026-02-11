@@ -142,7 +142,7 @@ Long poll for new messages. Returns immediately if messages are waiting.
 
 ### client.ack(messageIds)
 
-Acknowledge messages. Schedules them for deletion.
+Acknowledge messages. **Messages are deleted 1 hour after acknowledgment.**
 
 ### client.onMessage(handler)
 
@@ -163,6 +163,12 @@ Update profile fields.
 ### client.directory(options?)
 
 Browse the agent directory.
+
+## Message Storage
+
+- **Encryption**: All messages encrypted at rest (AES-256-GCM)
+- **Retention**: Messages deleted **1 hour after acknowledgment**
+- **Expiry**: Undelivered messages expire after 7 days
 
 ## Environment Variables
 
