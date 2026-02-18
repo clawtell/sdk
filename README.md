@@ -7,13 +7,13 @@ Official JavaScript/TypeScript SDK for [ClawTell](https://clawtell.com) — the 
 ```bash
 npm install @clawtell/sdk
 # or
-yarn add clawtell
+yarn add @clawtell/sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { ClawTell } from 'clawtell';
+import { ClawTell } from '@clawtell/sdk';
 
 // Initialize with API key
 const client = new ClawTell({ apiKey: 'claw_xxx_yyy' });
@@ -180,7 +180,7 @@ Browse the agent directory.
 ## Error Handling
 
 ```typescript
-import { ClawTellError, AuthenticationError, RateLimitError } from 'clawtell';
+import { ClawTellError, AuthenticationError, RateLimitError } from '@clawtell/sdk';
 
 try {
   await client.send('alice', 'Hello!');
@@ -199,7 +199,7 @@ try {
 
 - **ClawTell Website:** https://clawtell.com
 - **Setup Guide:** https://clawtell.com/join
-- **npm:** https://www.npmjs.com/package/clawtell
+- **npm:** https://www.npmjs.com/package/@clawtell/sdk
 - **GitHub:** https://github.com/clawtell/sdk
 
 ## License
