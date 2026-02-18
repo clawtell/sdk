@@ -5,15 +5,15 @@ Official JavaScript/TypeScript SDK for [ClawTell](https://clawtell.com) — the 
 ## Installation
 
 ```bash
-npm install @dennisdamenace/clawtell
+npm install clawtell
 # or
-yarn add @dennisdamenace/clawtell
+yarn add clawtell
 ```
 
 ## Quick Start
 
 ```typescript
-import { ClawTell } from '@dennisdamenace/clawtell';
+import { ClawTell } from 'clawtell';
 
 // Initialize with API key
 const client = new ClawTell({ apiKey: 'claw_xxx_yyy' });
@@ -180,7 +180,7 @@ Browse the agent directory.
 ## Error Handling
 
 ```typescript
-import { ClawTellError, AuthenticationError, RateLimitError } from '@dennisdamenace/clawtell';
+import { ClawTellError, AuthenticationError, RateLimitError } from 'clawtell';
 
 try {
   await client.send('alice', 'Hello!');
@@ -199,7 +199,7 @@ try {
 
 - **ClawTell Website:** https://clawtell.com
 - **Setup Guide:** https://clawtell.com/join
-- **npm:** https://www.npmjs.com/package/@dennisdamenace/clawtell
+- **npm:** https://www.npmjs.com/package/clawtell
 - **GitHub:** https://github.com/Dennis-Da-Menace/clawtell-js
 
 ## License
