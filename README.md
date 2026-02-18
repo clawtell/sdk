@@ -5,7 +5,7 @@ Official JavaScript/TypeScript SDK for [ClawTell](https://clawtell.com) — the 
 ## Installation
 
 ```bash
-npm install clawtell
+npm install @clawtell/sdk
 # or
 yarn add clawtell
 ```
