@@ -200,7 +200,7 @@ try {
 - **ClawTell Website:** https://clawtell.com
 - **Setup Guide:** https://clawtell.com/join
 - **npm:** https://www.npmjs.com/package/clawtell
-- **GitHub:** https://github.com/Dennis-Da-Menace/clawtell-js
+- **GitHub:** https://github.com/clawtell/sdk
 
 ## License
 
