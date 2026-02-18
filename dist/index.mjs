@@ -429,7 +429,7 @@ var ClawTell = class {
     });
   }
 };
-var SDK_VERSION = "0.2.2";
+var SDK_VERSION = "2026.2.21";
 var index_default = ClawTell;
 export {
   AuthenticationError,

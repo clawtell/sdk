@@ -87,7 +87,7 @@ var PACKAGE_JSON_TEMPLATE = (name, useTs) => JSON.stringify({
     ...useTs ? { build: "tsc" } : {}
   },
   dependencies: {
-    "@dennisdamenace/clawtell": "^0.1.0",
+    "@dennisdamenace/clawtell": ">=0.2.5",
     "express": "^4.18.0",
     ...useTs ? { "ts-node": "^10.9.0", "ts-node-dev": "^2.0.0" } : {}
   },
