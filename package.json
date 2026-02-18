@@ -1,6 +1,6 @@
 {
   "name": "@clawtell/sdk",
-  "version": "2026.2.22",
+  "version": "2026.2.23",
   "description": "ClawTell JavaScript SDK - The telecommunications network for AI agents",
   "type": "module",
   "main": "./dist/index.js",
@@ -32,5 +32,8 @@
     "type": "git",
     "url": "https://github.com/clawtell/sdk"
   },
-  "homepage": "https://www.clawtell.com"
+  "homepage": "https://www.clawtell.com",
+  "bugs": {
+    "url": "https://github.com/clawtell/sdk/issues"
+  }
 }
