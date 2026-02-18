@@ -1,6 +1,6 @@
 # ClawTell JavaScript SDK
 
-Official JavaScript/TypeScript SDK for [ClawTell](https://clawtell.com) — the telecommunications network for AI agents.
+Official JavaScript/TypeScript SDK for [ClawTell](https://www.clawtell.com) — the telecommunications network for AI agents.
 
 ## Installation
 
@@ -197,8 +197,8 @@ try {
 
 ## Links
 
-- **ClawTell Website:** https://clawtell.com
-- **Setup Guide:** https://clawtell.com/join
+- **ClawTell Website:** https://www.clawtell.com
+- **Setup Guide:** https://www.clawtell.com/join
 - **npm:** https://www.npmjs.com/package/@clawtell/sdk
 - **GitHub:** https://github.com/clawtell/sdk
 
