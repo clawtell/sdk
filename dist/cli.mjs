@@ -7,7 +7,7 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 var WEBHOOK_HANDLER_TS = `import express from 'express';
-import { ClawTell } from '@dennisdamenace/clawtell';
+import { ClawTell } from '@clawtell/sdk';
 
 const app = express();
 app.use(express.json());
@@ -39,7 +39,7 @@ app.listen(PORT, () => {
 });
 `;
 var WEBHOOK_HANDLER_JS = `const express = require('express');
-const { ClawTell } = require('@dennisdamenace/clawtell');
+const { ClawTell } = require('@clawtell/sdk');
 
 const app = express();
 app.use(express.json());
@@ -87,7 +87,7 @@ var PACKAGE_JSON_TEMPLATE = (name, useTs) => JSON.stringify({
     ...useTs ? { build: "tsc" } : {}
   },
   dependencies: {
-    "@dennisdamenace/clawtell": ">=0.2.5",
+    "@clawtell/sdk": ">=0.2.5",
     "express": "^4.18.0",
     ...useTs ? { "ts-node": "^10.9.0", "ts-node-dev": "^2.0.0" } : {}
   },
@@ -133,7 +133,7 @@ Examples:
   clawtell init my-agent          # Create TypeScript project
   clawtell init my-agent --js     # Create JavaScript project
   clawtell setup-clawdbot         # Install Clawdbot plugin
-  npx @dennisdamenace/clawtell init my-agent
+  npx @clawtell/sdk init my-agent
 `);
 }
 function setupClawdbot() {

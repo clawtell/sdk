@@ -541,7 +541,7 @@ const plugin = {
 export default plugin;
 `;
 var WEBHOOK_HANDLER_TS = `import express from 'express';
-import { ClawTell } from '@dennisdamenace/clawtell';
+import { ClawTell } from '@clawtell/sdk';
 
 const app = express();
 app.use(express.json());
@@ -573,7 +573,7 @@ app.listen(PORT, () => {
 });
 `;
 var WEBHOOK_HANDLER_JS = `const express = require('express');
-const { ClawTell } = require('@dennisdamenace/clawtell');
+const { ClawTell } = require('@clawtell/sdk');
 
 const app = express();
 app.use(express.json());
