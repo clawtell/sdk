@@ -133,9 +133,20 @@ var ClawTell = class {
   }
   /**
    * Mark a message as read.
+   * @deprecated Use ack([messageId]) instead for batch acknowledgment.
    */
   async markRead(messageId) {
+    console.warn("markRead() is deprecated. Use ack([messageId]) instead.");
     return this.request("POST", `/messages/${messageId}/read`);
+  }
+  /**
+   * Acknowledge messages (batch). Marks messages as delivered and schedules deletion.
+   */
+  async ack(messageIds) {
+    if (!messageIds || messageIds.length === 0) {
+      return { success: true, acked: 0 };
+    }
+    return this.request("POST", "/messages/ack", { body: { messageIds } });
   }
   /**
    * Long poll for new messages (RECOMMENDED for receiving messages).
@@ -344,92 +355,11 @@ var ClawTell = class {
       }
     });
   }
-  // ─────────────────────────────────────────────────────────────
-  // Delivery Channels
-  // ─────────────────────────────────────────────────────────────
-  /**
-   * List your configured delivery channels.
-   * 
-   * @example
-   * ```typescript
-   * const { channels } = await client.deliveryChannels();
-   * for (const ch of channels) {
-   *   console.log(`${ch.platform}: ${ch.enabled ? 'enabled' : 'disabled'}`);
-   * }
-   * ```
-   */
-  async deliveryChannels() {
-    return this.request("GET", "/delivery-channels");
-  }
-  /**
-   * Add a delivery channel for offline message delivery.
-   * 
-   * @param platform - "telegram", "discord", or "slack"
-   * @param credentials - Platform-specific credentials
-   * @param sendTestMessage - Whether to send a test message to verify
-   * 
-   * @example
-   * ```typescript
-   * // Add Telegram
-   * await client.addDeliveryChannel('telegram', {
-   *   botToken: '123456:ABC...',
-   *   chatId: '987654321'
-   * });
-   * 
-   * // Add Discord
-   * await client.addDeliveryChannel('discord', {
-   *   webhookUrl: 'https://discord.com/api/webhooks/...'
-   * });
-   * 
-   * // Add Slack
-   * await client.addDeliveryChannel('slack', {
-   *   webhookUrl: 'https://hooks.slack.com/services/...'
-   * });
-   * ```
-   */
-  async addDeliveryChannel(platform, credentials, sendTestMessage = true) {
-    return this.request("POST", "/delivery-channels", {
-      body: {
-        platform,
-        credentials,
-        sendTestMessage
-      }
-    });
-  }
-  /**
-   * Remove a delivery channel.
-   * 
-   * @param platform - "telegram", "discord", or "slack"
-   */
-  async removeDeliveryChannel(platform) {
-    return this.request("DELETE", `/delivery-channels?platform=${platform}`);
-  }
-  /**
-   * Discover available Telegram chats for a bot.
-   * Use this to find your chat ID when setting up Telegram delivery.
-   * You must send a message to your bot first.
-   * 
-   * @param botToken - Your Telegram bot token from @BotFather
-   * 
-   * @example
-   * ```typescript
-   * const result = await client.discoverTelegramChats('123456:ABC...');
-   * console.log(`Bot: @${result.botInfo.username}`);
-   * for (const chat of result.chats) {
-   *   console.log(`  Chat ID: ${chat.id} (${chat.type})`);
-   * }
-   * ```
-   */
-  async discoverTelegramChats(botToken) {
-    return this.request("POST", "/delivery-channels/discover", {
-      body: {
-        platform: "telegram",
-        botToken
-      }
-    });
-  }
+  // Delivery Channels - REMOVED
+  // These methods were removed in v0.2.5 as ClawTell now uses long polling.
+  // Messages are delivered via poll() instead of push delivery channels.
 };
-var SDK_VERSION = "2026.2.21";
+var SDK_VERSION = "2026.2.23";
 var index_default = ClawTell;
 export {
   AuthenticationError,
