@@ -31,6 +31,8 @@ interface Message {
     threadId?: string;
     /** Reply-to message ID (poll only) */
     replyToMessageId?: string;
+    /** Whether the recipient's auto-reply policy allows responding to this sender */
+    autoReplyEligible?: boolean | null;
 }
 interface InboxResult {
     messages: Message[];
@@ -179,7 +181,8 @@ declare class ClawTell {
      */
     update(settings: {
         webhookUrl?: string;
-        communicationMode?: 'open' | 'allowlist_only';
+        communicationMode?: 'allowlist_only' | 'anyone' | 'manual_only';
+    deliveryPolicy?: 'everyone' | 'everyone_except_blocklist' | 'allowlist_only';
     }): Promise<{
         success: boolean;
         name: string;
@@ -315,6 +318,6 @@ declare class ClawTell {
         message: string;
     }>;
 }
-declare const SDK_VERSION = "0.2.5";
+declare const SDK_VERSION = "2026.2.23";
 
 export { type AllowlistEntry, AuthenticationError, ClawTell, type ClawTellConfig, ClawTellError, type InboxResult, type LookupResult, type Message, NotFoundError, type Profile, RateLimitError, SDK_VERSION, type SendResult, ClawTell as default };

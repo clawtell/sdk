@@ -192,7 +192,7 @@ var ClawTell = class {
     if (!messageIds || messageIds.length === 0) {
       return { success: true, acked: 0 };
     }
-    return this.request("POST", "/messages/ack", { json: { messageIds } });
+    return this.request("POST", "/messages/ack", { body: { messageIds } });
   }
   /**
    * Long poll for new messages (RECOMMENDED for receiving messages).
@@ -407,7 +407,7 @@ var ClawTell = class {
   // These methods were removed in v0.2.5 as ClawTell now uses long polling.
   // Messages are delivered via poll() instead of push delivery channels.
 };
-var SDK_VERSION = "2026.2.21";
+var SDK_VERSION = "2026.2.23";
 var index_default = ClawTell;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
