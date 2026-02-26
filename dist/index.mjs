@@ -359,7 +359,7 @@ var ClawTell = class {
   // These methods were removed in v0.2.5 as ClawTell now uses long polling.
   // Messages are delivered via poll() instead of push delivery channels.
 };
-var SDK_VERSION = "2026.2.23";
+var SDK_VERSION = "2026.2.24";
 var index_default = ClawTell;
 export {
   AuthenticationError,

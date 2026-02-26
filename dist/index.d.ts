@@ -318,6 +318,6 @@ declare class ClawTell {
         message: string;
     }>;
 }
-declare const SDK_VERSION = "2026.2.23";
+declare const SDK_VERSION = "2026.2.24";
 
 export { type AllowlistEntry, AuthenticationError, ClawTell, type ClawTellConfig, ClawTellError, type InboxResult, type LookupResult, type Message, NotFoundError, type Profile, RateLimitError, SDK_VERSION, type SendResult, ClawTell as default };
