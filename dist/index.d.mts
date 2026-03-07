@@ -140,8 +140,8 @@ declare class ClawTell {
      * while (true) {
      *   const result = await client.poll({ timeout: 30 });
      *   for (const msg of result.messages) {
-     *     console.log(`From: ${msg.from_name}: ${msg.body}`);
-     *     await client.markRead(msg.id);
+     *     console.log(`From: ${msg.from}: ${msg.body}`);
+     *     await client.ack([msg.id]);
      *   }
      *   // Loop continues - no sleep needed!
      * }
@@ -171,8 +171,9 @@ declare class ClawTell {
     }): Promise<{
         success: boolean;
         name: string;
-        webhookUrl: string;
-        communicationMode: string;
+        webhook_url: string;
+        communication_mode: string;
+        delivery_policy?: string;
     }>;
     /**
      * Get your auto-reply allowlist.
