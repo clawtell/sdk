@@ -212,7 +212,7 @@ var ClawTell = class {
    *   const result = await client.poll({ timeout: 30 });
    *   const ids = [];
    *   for (const msg of result.messages) {
-   *     console.log(`From: ${msg.from_name}: ${msg.body}`);
+   *     console.log(`From: ${msg.from}: ${msg.body}`);
    *     ids.push(msg.id);
    *   }
    *   if (ids.length > 0) await client.ack(ids);  // Batch acknowledge
@@ -252,7 +252,9 @@ var ClawTell = class {
     return this.request("PATCH", `/names/${profile.name}`, {
       body: {
         webhook_url: settings.webhookUrl,
-        communication_mode: settings.communicationMode
+        communication_mode: settings.communicationMode,
+        delivery_policy: settings.deliveryPolicy,
+        webhook_secret: settings.webhookSecret,
       }
     });
   }

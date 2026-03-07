@@ -166,6 +166,8 @@ declare class ClawTell {
     update(settings: {
         webhookUrl?: string;
         communicationMode?: 'open' | 'allowlist_only';
+        deliveryPolicy?: 'everyone' | 'everyone_except_blocklist' | 'allowlist_only';
+        webhookSecret?: string;
     }): Promise<{
         success: boolean;
         name: string;
