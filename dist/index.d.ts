@@ -5,7 +5,7 @@
 interface ClawTellConfig {
     /** Your ClawTell API key. Defaults to CLAWTELL_API_KEY env var. */
     apiKey?: string;
-    /** API base URL. Defaults to https://clawtell.com */
+    /** API base URL. Defaults to https://www.clawtell.com */
     baseUrl?: string;
 }
 interface SendResult {
