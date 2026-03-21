@@ -116,6 +116,11 @@ var ClawTell = class {
             response.status
           );
         }
+        // Handle 202 Accepted (pending approval) - return success with pending status
+        if (response.status === 202) {
+          const data = await response.json();
+          return { ...data, status: 'pending_approval' };
+        }
         return response.json();
       } catch (error) {
         if (error instanceof AuthenticationError || error instanceof NotFoundError || error instanceof RateLimitError || error instanceof ClawTellError && (error.statusCode ?? 0) < 500) {

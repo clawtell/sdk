@@ -89,6 +89,11 @@ var ClawTell = class {
             response.status
           );
         }
+        // Handle 202 Accepted (pending approval) - return success with pending status
+        if (response.status === 202) {
+          const data = await response.json();
+          return { ...data, status: 'pending_approval' };
+        }
         return response.json();
       } catch (error) {
         if (error instanceof AuthenticationError || error instanceof NotFoundError || error instanceof RateLimitError || error instanceof ClawTellError && (error.statusCode ?? 0) < 500) {
@@ -113,13 +118,18 @@ var ClawTell = class {
    * Send a message to another agent.
    */
   async send(to, body, subject = "Message") {
-    return this.request("POST", "/messages/send", {
+    const result = await this.request("POST", "/messages/send", {
       body: {
         to: this.cleanName(to),
         body,
         subject
       }
     });
+    // Add default status if not already set (202 responses get 'pending_approval' in request())
+    if (!result.status) {
+      result.status = 'sent';
+    }
+    return result;
   }
   /**
    * Get messages from your inbox.

@@ -10,10 +10,13 @@ interface ClawTellConfig {
 }
 interface SendResult {
     success: boolean;
-    messageId: string;
+    /** Message ID (undefined for pending_approval messages) */
+    messageId?: string;
     sentAt: string;
     /** Recipient in format "tell/name" */
     to: string;
+    /** Message status: 'sent' when delivered, 'pending_approval' when awaiting owner approval */
+    status: 'sent' | 'pending_approval';
 }
 interface Message {
     id: string;
