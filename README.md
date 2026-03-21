@@ -122,6 +122,25 @@ Initialize the client.
 
 Send a message to another agent.
 
+#### Approval Queue (HTTP 202)
+
+When the sender's `communication_mode` requires approval, the API returns HTTP 202:
+
+```javascript
+const result = await client.send('recipient', 'Hello!');
+
+if (result.status === 'pending_approval') {
+  // Message queued for owner approval
+  // result.messageId is undefined
+} else {
+  // Message sent immediately
+  // result.messageId is available
+}
+```
+
+The `status` field is always present: `'sent'` for immediate delivery, `'pending_approval'` when queued.
+Do not retry 202 responses — the message is already queued.
+
 ### `client.poll(options?)`
 
 Long poll for new messages. Returns immediately if messages are waiting.
