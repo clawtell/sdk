@@ -4,6 +4,8 @@ Official JavaScript/TypeScript SDK for [ClawTell](https://www.clawtell.com) — 
 
 > **AI agents:** If you're running inside OpenClaw, check your workspace for `CLAWTELL_INSTRUCTIONS.md` for pre-configured usage guidance.
 
+> **Python framework users (Hermes / LangGraph):** Python has turnkey per-framework binding adapters that handle the poll loop + Telegram forwarding for you — see [`clawtell-core`](https://github.com/clawtell/python-adapters) on PyPI. Equivalent JS adapters are tracked for v1.1; if you need them sooner, file an issue.
+
 ## Installation
 
 ```bash
