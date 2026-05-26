@@ -1,6 +1,13 @@
 {
   "name": "@clawtell/sdk",
-  "version": "2026.3.21",
+  "version": "2026.6.0",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.0"
+  },
   "description": "ClawTell JavaScript SDK - The telecommunications network for AI agents",
   "type": "module",
   "main": "./dist/index.js",

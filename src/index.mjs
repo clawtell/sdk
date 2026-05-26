@@ -1,5 +1,3 @@
-import "./chunk-Y6FXYEAI.mjs";
-
 // src/index.ts
 var ClawTellError = class extends Error {
   constructor(message, statusCode) {
@@ -27,9 +25,13 @@ var RateLimitError = class extends ClawTellError {
     this.name = "RateLimitError";
   }
 };
+var DEFAULT_SSE_URL = "https://clawtell-sse.fly.dev";
+var SSE_DEDUP_WINDOW = 500;
 var ClawTell = class {
   apiKey;
   baseUrl;
+  sseUrl;
+  _sseSeenIds;
   constructor(config = {}) {
     this.apiKey = config.apiKey || process.env.CLAWTELL_API_KEY || "";
     if (!this.apiKey) {
@@ -38,6 +40,8 @@ var ClawTell = class {
       );
     }
     this.baseUrl = (config.baseUrl || process.env.CLAWTELL_BASE_URL || "https://www.clawtell.com").replace(/\/$/, "");
+    this.sseUrl = (config.sseUrl || process.env.CLAWTELL_SSE_URL || DEFAULT_SSE_URL).replace(/\/$/, "");
+    this._sseSeenIds = [];
   }
   timeout = 3e4;
   // 30 seconds
@@ -152,9 +156,40 @@ var ClawTell = class {
   /**
    * Acknowledge messages (batch). Marks messages as delivered and schedules deletion.
    */
-  async ack(messageIds) {
+  async ack(messageIds, options = {}) {
     if (!messageIds || messageIds.length === 0) {
       return { success: true, acked: 0 };
+    }
+    const { preferSse = false } = options;
+    if (preferSse) {
+      const sseEndpoint = `${this.sseUrl.replace(/\/$/, "")}/v1/ack`;
+      let response;
+      try {
+        response = await fetch(sseEndpoint, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ messageIds }),
+          signal: AbortSignal.timeout(1e4),
+        });
+      } catch (e) {
+        // Connection-level failure (DNS, network) — fall through to API host.
+        response = null;
+      }
+      if (response) {
+        if (response.ok) return await response.json();
+        // 4xx: surface immediately so the caller learns the real error
+        // (auth/bad-request). Only 5xx and 408 fall through to API host.
+        if (response.status < 500 && response.status !== 408) {
+          if (response.status === 401) throw new AuthenticationError();
+          if (response.status === 404) throw new NotFoundError();
+          const data = await response.json().catch(() => ({}));
+          throw new ClawTellError(data.error || `SSE ack ${response.status}`, response.status);
+        }
+        // 5xx / 408 — fall through to API host.
+      }
     }
     return this.request("POST", "/messages/ack", { body: { messageIds } });
   }
@@ -195,6 +230,112 @@ var ClawTell = class {
       return await this.request("GET", "/messages/poll", { params });
     } finally {
       this.timeout = originalTimeout;
+    }
+  }
+  /**
+   * Stream messages via Server-Sent Events.
+   *
+   * Async generator yielding message objects (same shape as poll().messages[i]).
+   * Returns when the server closes the stream (server auto-rotates ~every
+   * stream_timeout seconds) or when an unrecoverable error occurs. Callers
+   * should wrap in a retry loop for continuous delivery; the high-level
+   * clawtell_core.subscribe() helper does this for you.
+   *
+   * On forcePoll (or CLAWTELL_FORCE_POLL=1 env), SSE is skipped entirely and
+   * messages are yielded from poll() instead.
+   */
+  async *stream(options = {}) {
+    const {
+      timeout = 120,
+      limit = 50,
+      account = true,
+      lastEventId,
+      forcePoll = false,
+      sseUrl,
+      signal,
+    } = options;
+
+    const useForcePoll = forcePoll || process.env.CLAWTELL_FORCE_POLL;
+    if (useForcePoll) {
+      while (true) {
+        if (signal?.aborted) return;
+        const res = await this.poll({ timeout, limit: Math.min(limit, 100) });
+        const msgs = res?.messages ?? [];
+        for (const m of msgs) yield m;
+        if (msgs.length === 0) return;
+      }
+    }
+
+    const base = (sseUrl || this.sseUrl).replace(/\/$/, "");
+    const params = new URLSearchParams({
+      timeout: String(timeout),
+      limit: String(limit),
+    });
+    if (account) params.set("account", "true");
+    const url = `${base}/v1/stream?${params.toString()}`;
+    const headers = { Authorization: `Bearer ${this.apiKey}` };
+    if (lastEventId) headers["Last-Event-ID"] = lastEventId;
+
+    let response;
+    try {
+      response = await fetch(url, { headers, signal });
+    } catch (e) {
+      throw new ClawTellError(`SSE connection error: ${e.message}`);
+    }
+
+    if (response.status === 401) {
+      throw new AuthenticationError();
+    }
+    if (response.status >= 500) {
+      throw new ClawTellError(`SSE server error: ${response.status}`, response.status);
+    }
+    if (!response.ok) {
+      throw new ClawTellError(`SSE HTTP ${response.status}`, response.status);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) return;
+        buf += decoder.decode(value, { stream: true });
+
+        let sep;
+        while ((sep = buf.indexOf("\n\n")) >= 0) {
+          const raw = buf.slice(0, sep);
+          buf = buf.slice(sep + 2);
+
+          let eventName = "message";
+          let data = "";
+          for (const line of raw.split("\n")) {
+            if (line.startsWith("event:")) {
+              eventName = line.slice(6).trim();
+            } else if (line.startsWith("data:")) {
+              data += (data ? "\n" : "") + line.slice(5).trim();
+            }
+          }
+
+          if (eventName === "message") {
+            let msg;
+            try { msg = JSON.parse(data); } catch { continue; }
+            if (msg.id && this._sseSeenIds.includes(msg.id)) continue;
+            if (msg.id) {
+              this._sseSeenIds.push(msg.id);
+              if (this._sseSeenIds.length > SSE_DEDUP_WINDOW) {
+                this._sseSeenIds = this._sseSeenIds.slice(-SSE_DEDUP_WINDOW);
+              }
+            }
+            yield msg;
+          } else if (eventName === "timeout" || eventName === "error") {
+            return;
+          }
+        }
+      }
+    } finally {
+      try { reader.releaseLock(); } catch { /* ignore */ }
     }
   }
   // ─────────────────────────────────────────────────────────────
@@ -371,7 +512,7 @@ var ClawTell = class {
   // These methods were removed in v0.2.5 as ClawTell now uses long polling.
   // Messages are delivered via poll() instead of push delivery channels.
 };
-var SDK_VERSION = "2026.3.8";
+var SDK_VERSION = "2026.6.0";
 var index_default = ClawTell;
 export {
   AuthenticationError,

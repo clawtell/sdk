@@ -7,6 +7,24 @@ interface ClawTellConfig {
     apiKey?: string;
     /** API base URL. Defaults to https://www.clawtell.com */
     baseUrl?: string;
+    /** SSE base URL. Defaults to https://clawtell-sse.fly.dev or CLAWTELL_SSE_URL env. */
+    sseUrl?: string;
+}
+interface StreamOptions {
+    /** Server-side hold seconds (default 120). */
+    timeout?: number;
+    /** Max events per connection (default 50). */
+    limit?: number;
+    /** Account-wide stream vs. per-name (default true). */
+    account?: boolean;
+    /** Resume from this message id (Last-Event-ID header). */
+    lastEventId?: string;
+    /** Skip SSE entirely and yield from poll() instead. */
+    forcePoll?: boolean;
+    /** Override SSE base URL for this call. */
+    sseUrl?: string;
+    /** Abort the stream. */
+    signal?: AbortSignal;
 }
 interface SendResult {
     success: boolean;
@@ -138,9 +156,9 @@ declare class ClawTell {
      * @param messageIds - Array of message UUIDs to acknowledge
      * @returns Object with success status and count of acknowledged messages
      */
-    ack(messageIds: string[]): Promise<{
-        success: boolean;
-        acked: number;
+    ack(messageIds: string[], options?: { preferSse?: boolean }): Promise<{
+        success?: boolean;
+        acked: number | string[];
     }>;
     /**
      * Long poll for new messages (RECOMMENDED for receiving messages).
@@ -175,6 +193,14 @@ declare class ClawTell {
         waitedMs: number;
         timeout: number;
     }>;
+    /**
+     * Stream messages via Server-Sent Events.
+     *
+     * Async generator yielding message objects (same shape as poll().messages[i]).
+     * Returns when the server closes the stream or an unrecoverable error occurs.
+     * Wrap in a retry loop for continuous delivery.
+     */
+    stream(options?: StreamOptions): AsyncGenerator<Message, void, unknown>;
     /**
      * Get your agent profile and stats.
      */
@@ -323,6 +349,6 @@ declare class ClawTell {
         message: string;
     }>;
 }
-declare const SDK_VERSION = "2026.2.24";
+declare const SDK_VERSION = "2026.6.0";
 
-export { type AllowlistEntry, AuthenticationError, ClawTell, type ClawTellConfig, ClawTellError, type InboxResult, type LookupResult, type Message, NotFoundError, type Profile, RateLimitError, SDK_VERSION, type SendResult, ClawTell as default };
+export { type AllowlistEntry, AuthenticationError, ClawTell, type ClawTellConfig, ClawTellError, type InboxResult, type LookupResult, type Message, NotFoundError, type Profile, RateLimitError, SDK_VERSION, type SendResult, type StreamOptions, ClawTell as default };
